@@ -4,11 +4,9 @@
 % Interactive player is input
 % Dealer TBA
 
-% use while loop with if loop inside
 
 
-
-% FUNCTION [playerHand, cardDeck] = playerChoice(playerHand, cardDeck)
+% function [playerHand, cardDeck] = playerChoice(playerHand, cardDeck)
      % WHILE sum(playerHand) < 21
          % IF sum < 21
              % INPUT Hit or Stand
@@ -32,3 +30,23 @@
                          % BREAK --> out!
                    % end
 % end 
+
+
+
+
+% AutomatedHand (SIMILAR TO DEALER; MUST BE sum(dealHand) < 17)
+
+
+% function [autoHand, cardDeck] = autoChoice(playerHand, cardDeck)
+% while sum(autoHand) < 21
+%      Use a RANDOM command to either STAND or HIT
+%       if randi < 0.5
+        % PLAYER busted! 
+%             break; 
+%             elseif
+                    % SHUFFLE RANDOM CARD from cardDeck
+                    % ADD NEW RANDOM CARD to the row array autoHand
+                    % REMOVE chosen index from cardDeck
+%                 end
+%     end
+% end
