@@ -12,13 +12,6 @@ randomOrder = randperm(52);
 % Creates a random deck of 52 cards from 4 suits
 deck = deck(randomOrder);
 
-playerHand = [deck(1), deck(2)];
-
-% Displays starting hand to player
-disp("Your starting hand: ")
-
-disp(playerHand)
-
 
 % Totals up the sum of the two cards in the player's hand
 handTotal = sum(playerHand);
