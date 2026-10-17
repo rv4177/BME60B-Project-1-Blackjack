@@ -1,4 +1,5 @@
 % User interactions by deciding to hit or stand once cards are drawn
+% will add more comments soon lol
 
 %% 
 
