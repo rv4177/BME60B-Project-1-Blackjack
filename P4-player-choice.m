@@ -4,6 +4,30 @@
 % Interactive player is input
 % Dealer TBA
 
+% below are test values
+% deck = [5 3 9 8 2 10];
+% [playerHand, deck] = playerChoice([10 7], deck)
+
+function [playerHand, deck] = playerChoice(playerHand, deck)
+    while sum(playerHand) < 21
+            choice = input("Do you want to hit or stand? Type 'H' or 'S' ", 's');
+            if strcmpi(choice, "H")
+                playerHand = [playerHand, deck(1)];
+                deck(1) = [];
+                disp("You have " + sum(playerHand) + "in total.")
+                    if sum(playerHand) > 21
+                        disp("You are busted! You have " + sum(playerHand) + " in total.")
+                    else 
+                        disp("You have " + sum(playerHand) + " in total.")
+                    end
+            else
+                disp(playerHand);
+                break;
+            end
+      
+    end
+    
+end
 
 
 % function [playerHand, cardDeck] = playerChoice(playerHand, cardDeck)
