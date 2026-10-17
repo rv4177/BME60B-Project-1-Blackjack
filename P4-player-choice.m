@@ -12,6 +12,7 @@ function [playerHand, deck] = playerChoice(playerHand, deck)
     while sum(playerHand) < 21
             choice = input("Do you want to hit or stand? Type 'H' or 'S' ", 's');
             if strcmpi(choice, "H")
+                index = randi(length(deck));
                 playerHand = [playerHand, deck(1)];
                 deck(1) = [];
                 disp("You have " + sum(playerHand) + "in total.")
@@ -39,6 +40,7 @@ end
 function [autoHand, deck] = autoChoice(autoHand, deck)
     while sum(autoHand) < 21
         if randi < 0.5     % RUNS if # between 0 to 4.99 (auto HIT)
+            index = randi(length(deck));
             autoHand = [autoHand, deck(1)];    % add random number from deck
             deck(1) = [];                      % take card away from deck
         else               % RUNS if # between 0.5 to 1.0 (auto STAND)
