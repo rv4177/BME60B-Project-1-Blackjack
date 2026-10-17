@@ -33,8 +33,8 @@ end
 % EX if n = 6; we have 4 automated players
 % the function will loop for how many n-2 players are input
 
-
-
+% Automated player function acts as a 50/50 chance
+% Each n-2 automated player will have different responses 
 
 function [autoHand, deck] = autoChoice(autoHand, deck)
     while sum(autoHand) < 21
