@@ -5,7 +5,7 @@
 % Dealer TBA
 
 % below are test values
-% deck = [5 3 9 8 2 10];
+% deck = [1:52];
 % [playerHand, deck] = playerChoice([10 7], deck)
 
 function [playerHand, deck] = playerChoice(playerHand, deck)
