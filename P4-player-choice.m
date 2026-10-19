@@ -5,7 +5,7 @@
 
 % below are test values (ignore for real code)
 deck = [1:52];
-[playerHand, deck] = playerChoice([10 7], deck)
+[playerHand, deck] = playerChoice([], deck)
 [autoHand, deck] = autoChoice([], deck)
 [dealerHand, deck] = dealerChoice([], deck)
 
