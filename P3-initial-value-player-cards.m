@@ -1,11 +1,10 @@
 % Assign initial set of cards for each player
 
 % Creates a random deck of 52 cards from 4 suits  
-deck = deck(randomOrder); 
+function shuffledDeck = createRandomDeck()
+    shuffledDeck = deck(randperm(52));
+end
 
-
-playerHand = [deck(1), deck(2)];  
-otherPlayerHand = [];   % empty array
 dealerHand = [deck(3), deck(4)];
 
 % Deal two cards to user
