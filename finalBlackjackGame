@@ -1,1 +1,158 @@
+% Megan's final code 
+
+
+name = input("Welcome to BLACKJACK. What is your name? ", 's');
+disp(append("Hello, ", name, "!"))
+
+num_player = input("How many players do you want to play with? Choose between 1 and 6: "); % Prompting the user to choose number of players, between 1 and 5
+
+while num_player < 1 || num_player ~= floor(num_player) || num_player > 6 % Loop ensuring that the user's number input is valid
+    num_player = input("Please enter a positive whole number between 1 and 6. ");
+end
+
+player_turns = 1:num_player; % Creating an array for all players besides the user
+
+%% placing initial bet
+
+initialMoney = 100;
+bet = input("You currently have $" + initialMoney + ". How much do you want to bet? $" );
+
+while bet < 1 || bet > initialMoney || bet ~= floor(bet)
+    if bet > initialMoney
+        bet = input("You cannot bet more than you have. Enter a valid bet: $");
+    else
+        bet = input("Enter a whole-number bet between $1 and $" + initialMoney + ": $");
+    end
+end
+
+placeBet(initialMoney, bet);
+
+function currentMoney = placeBet(initialMoney, bet);
+    currentMoney = initialMoney - bet;
+    disp("Your current balance is $" + currentMoney)
+end
+
+
+
+% Creates a random deck of 52 cards from 4 suits  MEGAN
+
+oneSuit = [1:10, 10, 10, 10, 11];
+deck = [oneSuit, oneSuit, oneSuit, oneSuit];
+
+function deck = shuffledDeck(deck);
+    randomOrder = randperm(52);
+    deck = deck(randomOrder);
+end
+deck = shuffledDeck(deck);
+
+dealerHand = [deck(3), deck(4)];
+
+% Deal two cards to user
+playerHand = [deck(1), deck(2)];
+deck(1:2) = []; % Removes first two cards from deck
+
+% Displays starting hand to player
+disp("Your starting hand: " + num2str(playerHand))
+
+% Deal cards to other players
+otherPlayerHands = [];
+
+for n = 1 : num_player % Loop iterating through each player
+    otherPlayerHands{n} = [deck(1), deck(2)]; % Creating an array with two cards from the top of the deck for the player
+    deck(1:2) = []; % Removing first two cards from the deck 
+    oPlayer = num2str(otherPlayerHands{n}); % Converting the array into a string
+    disp(strcat("Player ", num2str(n+1),"'s hand: ", oPlayer)); % Displaying the other player's cards
+end
+
+% Totals up the sum of the two cards in the player's hand. COLE
+handTotal = sum(playerHand);
+
+numAces = sum(playerHand == 11);
+
+% Detects if there is an ace in the player hand and if the total is over 21
+% and subtracts 10 from the hand if both of these conditions are true
+while handTotal > 21 && numAces > 0
+    handTotal = handTotal - 10;
+    numAces = numAces - 1;      
+end
+
+disp(append("Dealer's first card: ", num2str(dealerHand(1))));
+
+
+% User interactions by deciding to hit or stand once cards are drawn
+% will add more comments soon lol
+
+%% 
+
+playerChoice(playerHand, deck);
+function [playerHand, deck] = playerChoice(playerHand, deck);
+    while sum(playerHand) < 21
+        choice = input("Do you want to hit or stand? Type 'H' or 'S' ", 's');
+        if strcmpi(choice, "H")              
+            playerHand = [playerHand, deck(1)];          % select random card (index) from deck and add to player hand
+            deck(1) = [];                                % remove card from deck
+            disp("You got a " + playerHand(end) + ".")
+            if sum(playerHand) > 21
+                disp("You busted! You have " + sum(playerHand) + " in total.")
+                playerWin = false;
+                break
+            else
+                disp("You now have " + sum(playerHand) + " in total.")
+            end
+        elseif strcmpi(choice, "S")
+            disp("Your cards are: " + num2str(playerHand))
+            disp("The sum of your cards is " + sum(playerHand) + ".");
+            break
+        else
+            choice = input("Please enter either 'H' or 'S' to hit or stand", 's');
+        end
+    
+    end
+
+end
+
+%%
+
+% Dealer
+dealerChoice(dealerHand, deck);
+function [dealerHand, deck] = dealerChoice(dealerHand, deck);
+    while sum(dealerHand) < 17        % will continue to add random card until BUST 
+        % select random card from deck
+        dealerHand = [dealerHand, deck(1)];      % add to dealer hand
+        deck(1) = [];                            % remove from deck
+    end
+        if sum(dealerHand) > 21
+            disp("Dealer busted! They have " + sum(dealerHand) + " in total.")
+            return;
+        else 
+            disp("Dealer stands! They have " + sum(dealerHand) + " in total.")
+        end
+end 
+
+oplayerChoice(otherPlayerHands, deck);
+
+function [oplayerHand, deck] = oplayerChoice(otherPlayerHands, deck);
+  for i = 1:num_player
+        while sum(oplayerHand{i}) < 17
+            oplayerHand{i}(end + 1) = deck(1);
+            deck(1) = [];
+        end
+        handTotal = sum(oplayerHand{i});
+        disp("Player " + num2str(i) + " hit with " + num2str(handTotal) + " total.")
+   
+       while sum(oplayerHand{i}) >= 17
+            oplayerHand{i}(end + 1) = deck(1);
+            deck(1) = [];
+        end
+        handTotal = sum(oplayerHand{i});
+        disp("Player " + num2str(i) + " hit with " + num2str(handTotal) + " total.")
+
+        if sum(dealerHand) > 21
+            disp("Player ", num2str(n), "busted! They have " + sum(dealerHand) + " in total.")
+            return;
+        else 
+        disp("Player ", num2str(n), "stands with" + sum(oplayerHand) + " total.")
+    end
+  end
+end
 
