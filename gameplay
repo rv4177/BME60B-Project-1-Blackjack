@@ -1,0 +1,25 @@
+function [playerHand, deck] = playerChoice(playerHand, deck)
+    while sum(playerHand) < 21
+        choice = input("Do you want to hit or stand? Type 'H' or 'S' ", 's');
+        if strcmpi(choice, "H")              
+            playerHand = [playerHand, deck(1)];          % select random card (index) from deck and add to player hand
+            deck(1) = [];                                % remove card from deck
+            disp("You got a " + playerHand(end) + ".")
+            if sum(playerHand) > 21
+                disp("You busted! You have " + sum(playerHand) + " in total.")
+                playerWin = false;
+                break
+            else
+                disp("You now have " + sum(playerHand) + " in total.")
+            end
+        elseif strcmpi(choice, "S")
+            disp("Your cards are: " + num2str(playerHand))
+            disp("The sum of your cards is " + sum(playerHand) + ".");
+            break
+        else
+            choice = input("Please enter either 'H' or 'S' to hit or stand", 's');
+        end
+    
+    end
+
+end
