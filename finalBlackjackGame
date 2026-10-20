@@ -1,9 +1,10 @@
 % Megan's updated code 11:27pm 10/19/2026
+% Arvie - Updated 1:16PM 10/20/26
 
 name = input("Welcome to BLACKJACK. What is your name? ", 's');
 disp(append("Hello, ", name, "!"))
 
-num_player = input("How many players do you want to play with? Choose between 1 and 6: "); % Prompting the user to choose number of players, between 1 and 5
+num_player = input("How many players do you want to play with? Choose between 1 and 6: "); % Prompting the user to choose number of players, between 1 and 6
 
 while num_player < 1 || num_player ~= floor(num_player) || num_player > 6 % Loop ensuring that the user's number input is valid
     num_player = input("Please enter a positive whole number between 1 and 6. ");
@@ -26,7 +27,7 @@ end
 
 placeBet(initialMoney, bet);
 
-function currentMoney = placeBet(initialMoney, bet);
+function currentMoney = placeBet(initialMoney, bet)
     currentMoney = initialMoney - bet;
     disp("Your current balance is $" + currentMoney)
 end
@@ -38,7 +39,7 @@ end
 oneSuit = [1:10, 10, 10, 10, 11];
 deck = [oneSuit, oneSuit, oneSuit, oneSuit];
 
-function deck = shuffledDeck(deck);
+function deck = shuffledDeck(deck)
     randomOrder = randperm(52);
     deck = deck(randomOrder);
 end
@@ -79,72 +80,75 @@ disp(append("Dealer's first card: ", num2str(dealerHand(1))));
 
 
 % User interactions by deciding to hit or stand once cards are drawn
-% will add more comments soon lol
 
-%% 
+%% Determining Player Hand
 
-playerChoice(playerHand, deck);
-function [playerHand, deck] = playerChoice(playerHand, deck);
+playerChoice(playerHand, deck); % ARVIE
+function [playerHand, deck] = playerChoice(playerHand, deck)
     while sum(playerHand) < 21
-        choice = input("Do you want to hit or stand? Type 'H' or 'S' ", 's');
-        if strcmpi(choice, "H")              
-            playerHand = [playerHand, deck(1)];          % select random card (index) from deck and add to player hand
-            deck(1) = [];                                % remove card from deck
-            disp("You got a " + playerHand(end) + ".")
-            if sum(playerHand) > 21
-                disp("You busted! You have " + sum(playerHand) + " in total.")
-                playerWin = false;
-                break
-            else
-                disp("You now have " + sum(playerHand) + " in total.")
-            end
-        elseif strcmpi(choice, "S")
-            disp("Your cards are: " + num2str(playerHand))
-            disp("The sum of your cards is " + sum(playerHand) + ".");
-            break
+        choice = input("Do you want to hit or stand? You currently have a card value of " + sum(playerHand) + " in total. Type 'H' or 'S' ", 's'); % Prompting user to hit or stand  
+        if strcmpi(choice, "H")                          % User prompts to Hit
+            playerHand = [playerHand, deck(1)];          % Select a random card (index) from deck and add to player hand
+            deck(1) = [];                                % Removes the card from deck (row array)
+            disp("You got a " + playerHand(end) + ".")  % Displays the random card the player received
+   
+                if sum(playerHand) > 21                     
+                    disp("You busted! You have " + sum(playerHand) + " in total.") 
+                    playerWin = false;                      
+                    break                           % Break disrupts the while loop once the player busts
+                    disp("You now have " + sum(playerHand) + " in total.")  % Displays the players total card value
+                end
+
+        elseif strcmpi(choice, "S")                             % User chooses to Stand
+            disp("Your cards are: " + num2str(playerHand))          
+            disp("The sum of your cards is " + sum(playerHand) + ".");  % Displays the player's current hand and calculates the total card value
+            break       % Exit the loop                                                 
         else
-            choice = input("Please enter either 'H' or 'S' to hit or stand", 's');
+            choice = input("Please enter either 'H' or 'S' to hit or stand", 's'); % Unknown inputs will prompt user to re-input either Hit or Stand
         end
     
     end
 
 end
 
-%%
+%% Determining Dealer Hand 
 
-% Dealer
-dealerChoice(dealerHand, deck);
+dealerChoice(dealerHand, deck); 
 function [dealerHand, deck] = dealerChoice(dealerHand, deck)
-    while sum(dealerHand) < 17        % will continue to add random card until BUST 
+    while sum(dealerHand) < 17        % Until the Dealer's total is less than 17, the Dealer will continue to add a new card until the condition is false
         % select random card from deck
-        dealerHand = [dealerHand, deck(1)];      % add to dealer hand
-        deck(1) = [];                            % remove from deck
+        dealerHand = [dealerHand, deck(1)];      % Deal a random card to the dealer's hand
+        deck(1) = [];                            % Removes the random card from deck's array
     end
-        if sum(dealerHand) > 21
+        
+        if sum(dealerHand) > 21                  % Determines the total card values of dealer hand and prompting if the dealer stands or is busted
             disp("Dealer busted! They have " + sum(dealerHand) + " in total.")
-            return;
+            return;                              % Return commands the program to exit while loop and function
         else 
             disp("Dealer stands! They have " + sum(dealerHand) + " in total.")
         end
 end 
 
 
+%% Determining Other Player Hands
 
     for i = 1:num_player
-        while sum(otherPlayerHands{i}) < 17
+        while sum(otherPlayerHands{i}) < 17 
             otherPlayerHands{i}(end + 1) = deck(1);
             deck(1) = [];
         end
        
-        disp("Player " + num2str(i+1) + " 's final hand:  " + num2str(otherPlayerHands{i}));
+        disp("Player " + num2str(i+1) + "'s final hand:  " + num2str(otherPlayerHands{i}));
   
 
         if sum(otherPlayerHands{i}) > 21
-            disp("Player " + num2str(i+1)+ "busted! They have " + sum(otherPlayerHands{i}) + " in total.");
+            disp("Player " + num2str(i+1)+ " busted! They have " + sum(otherPlayerHands{i}) + " in total.");
        
             
         else 
         disp("Player " + num2str(i+1) + " stands! They have " + sum(otherPlayerHands{i}) + " in total.");
         end 
     end
+
+%% Determine Winner
 
