@@ -115,10 +115,10 @@ end
 
 dealerChoice(dealerHand, deck); 
 function [dealerHand, deck] = dealerChoice(dealerHand, deck)
-    while sum(dealerHand) < 17        % Until the Dealer's total is less than 17, the Dealer will continue to add a new card until the condition is false
+    while sum(dealerHand) < 17        % Until the Dealer's total is less than 17, Dealer will continue to add a new card until the condition is false
         % select random card from deck
         dealerHand = [dealerHand, deck(1)];      % Deal a random card to the dealer's hand
-        deck(1) = [];                            % Removes the random card from deck's array
+        deck(1) = [];                            % Removes drawn random card from deck
     end
         
         if sum(dealerHand) > 21                  % Determines the total card values of dealer hand and prompting if the dealer stands or is busted
@@ -133,20 +133,22 @@ end
 %% Determining Other Player Hands
 
     for i = 1:num_player
-        while sum(otherPlayerHands{i}) < 17 
-            otherPlayerHands{i}(end + 1) = deck(1);
-            deck(1) = [];
+        while sum(otherPlayerHands{i}) < 17 % Drawing cards from deck until player hand is less than 17
+            otherPlayerHands{i}(end + 1) = deck(1); % Deal card from deck and add to other player's hand
+            deck(1) = []; % Remove drawn card from deck
         end
        
-        disp("Player " + num2str(i+1) + "'s final hand:  " + num2str(otherPlayerHands{i}));
-  
+        disp("Player " + num2str(i+1) + "'s final hand:  " + num2str(otherPlayerHands{i})); 
+              % Determine the other player(s) final hand value
 
         if sum(otherPlayerHands{i}) > 21
             disp("Player " + num2str(i+1)+ " busted! They have " + sum(otherPlayerHands{i}) + " in total.");
+                % Other player display total card values once drawn more than 21 in total 
        
             
         else 
         disp("Player " + num2str(i+1) + " stands! They have " + sum(otherPlayerHands{i}) + " in total.");
+                % Other player display ending total value of cards if under 21
         end 
     end
 
