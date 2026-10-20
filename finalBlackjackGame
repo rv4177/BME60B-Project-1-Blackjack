@@ -160,4 +160,25 @@ end
     end
 
 %% Determine Winner
+[playerBlackjack, playerWin, playerTie] = win_determinant(handTotal, dealerHand, playerHand)
+function [playerBlackjack, playerWin, playerTie] = win_determinant(handTotal, dealerHand, playerHand)
+    playerBlackjack = false;
+    playerWin = false; 
+    playerTie = false;
 
+    if handTotal == 21 & length(playerHand) == 2 & sum(dealerHand) ~= 21
+        playerBlackjack = true;
+        playerWin = true;
+    elseif sum(dealerHand) > 21 & handTotal < 21
+        playerWin = true;
+    elseif handTotal > sum(dealerHand) & length(playerHand) > 2
+        playerWin = true;
+    elseif handTotal < sum(dealerHand) & sum(dealerHand) < 21
+        playerWin = false;
+    elseif handTotal == sum(dealerHand) & handTotal <= 21
+        playerWin = false;
+        playerTie = true; % A tie is treated as no win
+    else 
+        playerWin = false;
+    end
+end
