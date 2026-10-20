@@ -1,5 +1,4 @@
-% Megan's final code 
-
+% Megan's updated code 11:27pm 10/19/2026
 
 name = input("Welcome to BLACKJACK. What is your name? ", 's');
 disp(append("Hello, ", name, "!"))
@@ -115,7 +114,7 @@ end
 
 % Dealer
 dealerChoice(dealerHand, deck);
-function [dealerHand, deck] = dealerChoice(dealerHand, deck);
+function [dealerHand, deck] = dealerChoice(dealerHand, deck)
     while sum(dealerHand) < 17        % will continue to add random card until BUST 
         % select random card from deck
         dealerHand = [dealerHand, deck(1)];      % add to dealer hand
@@ -129,30 +128,23 @@ function [dealerHand, deck] = dealerChoice(dealerHand, deck);
         end
 end 
 
-oplayerChoice(otherPlayerHands, deck);
 
-function [oplayerHand, deck] = oplayerChoice(otherPlayerHands, deck);
-  for i = 1:num_player
-        while sum(oplayerHand{i}) < 17
-            oplayerHand{i}(end + 1) = deck(1);
+
+    for i = 1:num_player
+        while sum(otherPlayerHands{i}) < 17
+            otherPlayerHands{i}(end + 1) = deck(1);
             deck(1) = [];
         end
-        handTotal = sum(oplayerHand{i});
-        disp("Player " + num2str(i) + " hit with " + num2str(handTotal) + " total.")
-   
-       while sum(oplayerHand{i}) >= 17
-            oplayerHand{i}(end + 1) = deck(1);
-            deck(1) = [];
-        end
-        handTotal = sum(oplayerHand{i});
-        disp("Player " + num2str(i) + " hit with " + num2str(handTotal) + " total.")
+       
+        disp("Player " + num2str(i+1) + " 's final hand:  " + num2str(otherPlayerHands{i}));
+  
 
-        if sum(dealerHand) > 21
-            disp("Player ", num2str(n), "busted! They have " + sum(dealerHand) + " in total.")
-            return;
+        if sum(otherPlayerHands{i}) > 21
+            disp("Player " + num2str(i+1)+ "busted! They have " + sum(otherPlayerHands{i}) + " in total.");
+       
+            
         else 
-        disp("Player ", num2str(n), "stands with" + sum(oplayerHand) + " total.")
+        disp("Player " + num2str(i+1) + " stands! They have " + sum(otherPlayerHands{i}) + " in total.");
+        end 
     end
-  end
-end
 
