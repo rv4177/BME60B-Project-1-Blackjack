@@ -1,6 +1,9 @@
 % Megan's updated code 11:27pm 10/19/2026
 % Arvie - Updated 1:16PM 10/20/26
 
+clear all
+clc
+
 name = input("Welcome to BLACKJACK. What is your name? ", 's');
 disp(append("Hello, ", name, "!"))
 
