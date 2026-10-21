@@ -82,18 +82,6 @@ function handTotal = getHandTotal(hand)
         end
 end
 
-% Totals up the sum of the two cards in the player's hand. COLE
-
-% 
-% numAces = sum(playerHand == 11);
-% 
-% % Detects if there is an ace in the player hand and if the total is over 21
-% % and subtracts 10 from the hand if both of these conditions are true
-% while handTotal > 21 && numAces > 0
-%     handTotal = handTotal - 10;
-%     numAces = numAces - 1;      
-% end
-
 disp(append("Dealer's first card: ", num2str(dealerHand(1))));
 
 
