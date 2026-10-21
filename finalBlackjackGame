@@ -71,17 +71,28 @@ for n = 1 : num_player % Loop iterating through each player
     disp(strcat("Player ", num2str(n+1),"'s hand: ", oPlayer)); % Displaying the other player's cards
 end
 
-% Totals up the sum of the two cards in the player's hand. COLE
 handTotal = sum(playerHand);
 
-numAces = sum(playerHand == 11);
-
-% Detects if there is an ace in the player hand and if the total is over 21
-% and subtracts 10 from the hand if both of these conditions are true
-while handTotal > 21 && numAces > 0
-    handTotal = handTotal - 10;
-    numAces = numAces - 1;      
+function handTotal = getHandTotal(hand)
+    handTotal = sum(hand);
+    numAces = sum(hand == 11);
+        while handTotal > 21 && numAces > 0
+         handTotal = handTotal - 10;
+         numAces = numAces - 1;      
+        end
 end
+
+% Totals up the sum of the two cards in the player's hand. COLE
+
+% 
+% numAces = sum(playerHand == 11);
+% 
+% % Detects if there is an ace in the player hand and if the total is over 21
+% % and subtracts 10 from the hand if both of these conditions are true
+% while handTotal > 21 && numAces > 0
+%     handTotal = handTotal - 10;
+%     numAces = numAces - 1;      
+% end
 
 disp(append("Dealer's first card: ", num2str(dealerHand(1))));
 
@@ -97,21 +108,26 @@ function [playerHand, deck] = playerChoice(playerHand, deck)
         if strcmpi(choice, "H")                          % User prompts to Hit
             playerHand = [playerHand, deck(1)];          % Select a random card (index) from deck and add to player hand
             deck(1) = [];                                % Removes the card from deck (row array)
-            disp("You got a " + playerHand(end) + ".")  % Displays the random card the player received
+            disp("You got a " + playerHand(end) + ".")   % Displays the random card the player received
+            handTotal = getHandTotal(playerHand);        % Update player deck using Ace function
    
                 if sum(playerHand) > 21                     
                     disp("You busted! You have " + sum(playerHand) + " in total.") 
                     playerWin = false;                      
                     break                           % Break disrupts the while loop once the player busts
                     disp("You now have " + sum(playerHand) + " in total.")  % Displays the players total card value
+                    handTotal = getHandTotal(playerHand);   
                 end
 
         elseif strcmpi(choice, "S")                             % User chooses to Stand
             disp("Your cards are: " + num2str(playerHand))          
             disp("The sum of your cards is " + sum(playerHand) + ".");  % Displays the player's current hand and calculates the total card value
+            handTotal = getHandTotal(playerHand);
             break       % Exit the loop                                                 
+        
         else
             choice = input("Please enter either 'H' or 'S' to hit or stand", 's'); % Unknown inputs will prompt user to re-input either Hit or Stand
+        
         end
     
     end
@@ -126,12 +142,15 @@ function [dealerHand, deck] = dealerChoice(dealerHand, deck)
         % select random card from deck
         dealerHand = [dealerHand, deck(1)];      % Deal a random card to the dealer's hand
         deck(1) = [];                            % Removes drawn random card from deck
+        handTotal = getHandTotal(dealerHand);    % Update player deck using Ace function
     end
         
         if sum(dealerHand) > 21                  % Determines the total card values of dealer hand and prompting if the dealer stands or is busted
             disp("Dealer busted! They have " + sum(dealerHand) + " in total.")
+            handTotal = getHandTotal(dealerHand);
             return;                              % Return commands the program to exit while loop and function
         else 
+            handTotal = getHandTotal(dealerHand);
             disp("Dealer stands! They have " + sum(dealerHand) + " in total.")
         end
 end 
@@ -140,9 +159,10 @@ end
 %% Determining Other Player Hands
 
     for i = 1:num_player
-        while sum(otherPlayerHands{i}) < 17 % Drawing cards from deck until player hand is less than 17
-            otherPlayerHands{i}(end + 1) = deck(1); % Deal card from deck and add to other player's hand
-            deck(1) = []; % Remove drawn card from deck
+        while sum(otherPlayerHands{i}) < 17            % Drawing cards from deck until player hand is less than 17
+            otherPlayerHands{i}(end + 1) = deck(1);    % Deal card from deck and add to other player's hand
+            deck(1) = [];                              % Remove drawn card from deck
+            handTotal = getHandTotal(num_player);      % Update player deck using Ace function
         end
        
         disp("Player " + num2str(i+1) + "'s final hand:  " + num2str(otherPlayerHands{i})); 
@@ -150,16 +170,19 @@ end
 
         if sum(otherPlayerHands{i}) > 21
             disp("Player " + num2str(i+1)+ " busted! They have " + sum(otherPlayerHands{i}) + " in total.");
-                % Other player display total card values once drawn more than 21 in total 
+            handTotal = getHandTotal(dealerHand);    
+            % Other player display total card values once drawn more than 21 in total 
        
             
         else 
-        disp("Player " + num2str(i+1) + " stands! They have " + sum(otherPlayerHands{i}) + " in total.");
+            disp("Player " + num2str(i+1) + " stands! They have " + sum(otherPlayerHands{i}) + " in total.");
+            handTotal = getHandTotal(dealerHand);
                 % Other player display ending total value of cards if under 21
         end 
     end
 
 %% Determine Winner
+
 [playerBlackjack, playerWin, playerTie] = win_determinant(handTotal, dealerHand, playerHand)
 function [playerBlackjack, playerWin, playerTie] = win_determinant(handTotal, dealerHand, playerHand)
     playerBlackjack = false;
