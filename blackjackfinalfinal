@@ -1,0 +1,245 @@
+clear all
+%% Asking user for number of players 
+
+name = input("Welcome to BLACKJACK. What is your name? ", 's');
+disp(append("Hello, ", name, "!"))
+
+num_player = input("How many players do you want to play with? Choose between 1 and 6: "); % Prompting the user to choose number of players, between 1 and 5
+
+while num_player < 1 || num_player ~= floor(num_player) || num_player > 6 % Loop ensuring that the user's number input is valid
+    num_player = input("Please enter a positive whole number between 1 and 6. ");
+end
+
+%% Placing initial bet
+
+initialMoney = 100; % User's available money to bet
+bet = input("You currently have $" + initialMoney + ". How much do you want to bet? $" ); % Asking for user's bet
+
+while bet < 1 || bet > initialMoney || bet ~= floor(bet) % Loop ensuring user's bet is at least 1, below their current balance, and an integer
+    if bet > initialMoney
+        bet = input("You cannot bet more than you have. Enter a valid bet: $");
+    else
+        bet = input("Enter a whole-number bet between $1 and $" + initialMoney + ": $");
+    end
+end
+
+currentMoney = initialMoney - bet; % Calculating updated balance 
+disp("Your current balance is $" + currentMoney + "."); % Displaying the user's current balance
+
+%% Dealing Initial Cards
+
+oneSuit = [2:10, 10, 10, 10, 11]; % An array for one suit of a deck of cards
+deck = [oneSuit, oneSuit, oneSuit, oneSuit]; % Creating a full deck with 4 suits
+
+deck = shuffledDeck(deck); % Creates a random deck of 52 cards from 4 suits
+
+% Deal two cards to user
+playerHand = [deck(1), deck(2)];
+deck(1:2) = []; % Removing the first two cards from the deck
+
+% Displays starting hand to player
+disp("Your starting hand: " + num2str(playerHand))
+
+% Deal cards to dealer
+dealerHand  = [deck(1), deck(2)];
+deck(1:2) = [];
+
+% Displays one dealer card
+disp("The dealer's first card: " + num2str(dealerHand(1)))
+
+% Deal cards to other players
+otherPlayerHands = {}; % A cell array which will contain other player's hands at each index
+
+for n = 1 : num_player % Loop for iterating through each player
+    otherPlayerHands{n} = [deck(1), deck(2)]; % Creating an array with two cards from the top of the deck for the player
+    deck(1:2) = []; % Removing first two cards from the deck 
+    oPlayer = num2str(otherPlayerHands{n}); % Converting the array into a string
+    disp(strcat("Player ", num2str(n + 1)," cards: ", oPlayer)); % Displaying the other player's cards
+end
+
+%% Starting game play
+
+% Totals up the sum of the two cards in the player's hand
+[handTotal, playerHand] = getHandTotal(playerHand); % Calling function that calculates player hand total, accounting for changing ace values
+
+numAces = sum(playerHand == 11); % Assigning variable for the number of aces in a hand
+
+handTotal = sum(playerHand); 
+dealerTotal = sum(dealerHand);
+otherHandTotal = []; % An array for the sums of other player hands
+
+% Calling function to ask user to hit or stand
+[playerHand, deck, handTotal] = playerChoice(playerHand, deck, handTotal);
+
+%% Playing Through Other Player Hands 
+
+for i = 1:num_player % Iterating through each player, using i as an index to identify each player's hand and its total
+    [otherHandTotal, otherPlayerHands, deck] = oPlayerChoice(otherPlayerHands, deck, i); % Calls function for automated play using dealer rules
+end
+
+[dealerHand, deck, dealerTotal] = dealerChoice(dealerHand, deck, dealerTotal); % Calling function for dealer play
+
+%% Calling functions for determining winner and distributing payout
+
+% Setting default win conditions to false 
+playerWin = false; 
+playerBlackjack = false;
+playerTie = false;
+
+% Calling win determining function and payout function
+[playerBlackjack, playerWin, playerTie] = win_determinant(handTotal, dealerTotal, playerHand);
+currentMoney = payout(currentMoney, bet, playerWin, playerBlackjack, playerTie);
+
+%% Shuffling Deck Function
+
+function deck = shuffledDeck(deck)
+    randomOrder = randperm(52);
+    deck = deck(randomOrder);
+end
+
+%% Ace Function 
+
+% Detects if there is an ace in the player hand and if the total is over 21
+% and subtracts 10 from the hand if both of these conditions are true
+
+function [handTotal, hand] = getHandTotal(hand)
+    handTotal = sum(hand);
+    numAces = sum(hand == 11);
+    while handTotal > 21 & numAces > 0
+        handTotal = handTotal - 10;
+        numAces = numAces - 1;
+        if isequal(hand, [11, 11]) == true % Replacing one of the 11 values to 1 for a playable hand
+            hand(1) = 1;
+        else
+            aceIndex = hand == 11; % Identifying the index with the ace
+            hand(aceIndex) = 1; % Replacing the ace value with 1
+        end
+    end
+end
+
+%% Gameplay Function
+
+function [playerHand, deck, handTotal] = playerChoice(playerHand, deck, handTotal)
+    while sum(playerHand) < 21
+        choice = input("Do you want to hit or stand? Type 'H' or 'S' ", 's');
+        if strcmpi(choice, "H")                          % User prompts to Hit       
+            playerHand = [playerHand, deck(1)];          % Select a random card (index) from deck and add to player hand
+            deck(1) = [];                                % Removes the card from deck (row array)
+            
+            if playerHand(end) == 11
+                disp("You got an Ace.") % Displays the random card the player received
+                handTotal = getHandTotal(playerHand); % Update player deck using Ace function
+            
+            else 
+                disp("You got a " + playerHand(end) + ".") 
+                handTotal = getHandTotal(playerHand);
+            end
+            
+            if sum(playerHand) > 21
+                disp("You busted! You have " + sum(playerHand) + " in total.")
+                playerWin = false;
+                break % Break disrupts the while loop once the player busts
+            else
+                disp("You now have " + sum(playerHand) + " in total.")  % Displays the players total card value
+            end
+        
+        elseif strcmpi(choice, "S") % User chooses to Stand
+            disp("Your cards are: " + num2str(playerHand))
+            disp("The sum of your cards is " + sum(playerHand) + "."); % Displays the player's current hand and calculates the total card value
+            handTotal = getHandTotal(playerHand);
+            break % Exit the loop   
+        else
+            choice = input("Please enter either 'H' or 'S' to hit or stand", 's'); % Asks user to input a valid response
+        end
+    
+    end
+
+end
+
+%% Dealer Play Function
+
+function [dealerHand, deck, dealerTotal] = dealerChoice(dealerHand, deck, dealerTotal)
+    while sum(dealerHand) < 17        % Until the Dealer's total is less than 17, Dealer will continue to add a new card until the condition is false
+        % select random card from deck
+        dealerHand = [dealerHand, deck(1)];      % Deal a random card to the dealer's hand
+        deck(1) = [];                            % Removes drawn random card from deck
+        dealerTotal = getHandTotal(dealerHand);  % Update dealer hand total using Ace function
+    end
+    
+    if sum(dealerHand) > 21                  % Determines the total card values of dealer hand and prompting if the dealer stands or is busted
+        disp("Dealer busted! They have " + sum(dealerHand) + " in total.")
+        dealerTotal = getHandTotal(dealerHand);
+        return;                              % Return commands the program to exit while loop and function
+    else 
+        dealerTotal = getHandTotal(dealerHand);
+        disp("Dealer stands! They have " + sum(dealerHand) + " in total.")
+    end
+end 
+
+%% Other Players Play Function
+
+function [otherHandTotal, otherPlayerHands, deck] = oPlayerChoice(otherPlayerHands, deck, i);
+    while sum(otherPlayerHands{i}) < 17 % Drawing cards from deck until player hand is less than 17
+        otherPlayerHands{i}(end + 1) = deck(1); % Deal card from deck and add to other player's hand
+        deck(1) = []; % Remove drawn card from deck
+        [otherHandTotal(i), otherPlayerHands{i}] = getHandTotal(otherPlayerHands{i}); % Update player deck using Ace function
+    end
+    
+    disp("Player " + num2str(i+1) + "'s final hand:  " + num2str(otherPlayerHands{i})); 
+    % Determine the other player(s) final hand value
+    
+    if sum(otherPlayerHands{i}) > 21
+        disp("Player " + num2str(i+1)+ " busted! They have " + sum(otherPlayerHands{i}) + " in total.");
+        % Other player display total card values once drawn more than 21 in total 
+        [otherHandTotal(i), otherPlayerHands{i}] = getHandTotal(otherPlayerHands{i});
+    else 
+        disp("Player " + num2str(i+1) + " stands! They have " + sum(otherPlayerHands{i}) + " in total.");
+        % Other player display ending total value of cards if under 21
+        [otherHandTotal(i), otherPlayerHands{i}] = getHandTotal(otherPlayerHands{i});
+    end 
+end
+
+%% Determining Winner Function
+
+% Using inputs to output values used for calculating the payout
+
+function [playerBlackjack, playerWin, playerTie] = win_determinant(handTotal, dealerTotal, playerHand)
+    
+    playerBlackjack = false; % Resetting default win conditions
+    playerWin = false; 
+    playerTie = false;
+
+    if handTotal < 21 & dealerTotal > 21 % When the user has under 21 and dealer busts
+        playerWin = true;
+    elseif handTotal == 21 & length(playerHand) == 2 & dealerTotal ~= 21 % When the user lands a blackjack
+        playerBlackjack = true;
+        playerWin = true;
+    elseif handTotal == 21 & length(playerHand) > 2 % When the user has 21 but not a blackjack
+        playerWin = true;
+    elseif handTotal <= 21 & handTotal > dealerTotal % When no one busts but the user has a higher total than the dealer
+        playerWin = true;
+    elseif handTotal <= 21 & handTotal == dealerTotal % When the user and dealer have the same total
+        playerTie = true; 
+        playerWin = false; % A tie is treated as no win
+    else 
+        playerWin = false;
+    end
+end
+
+%% Money Calculation Function
+
+function currentMoney = payout(currentMoney, bet, playerWin, playerBlackjack, playerTie)
+    if playerWin == true & playerBlackjack == false
+        currentMoney = currentMoney + bet * 2; % The user gets double bet back
+        disp("You won! You earned $" + num2str(bet * 2) + ...
+            ". You currently have $" + num2str(currentMoney) + ".");
+    elseif playerWin == true & playerBlackjack == true
+        currentMoney = currentMoney + bet * 2.5 ; % The user gets 2.5x their bet back
+        disp("You got a Blackjack! You earned $" + num2str(bet * 1.5) + ". You currently have $" + num2str(currentMoney) + ".")
+    elseif playerWin == false & playerTie == true
+        currentMoney = currentMoney + bet;
+        disp("You tied with the dealer! You get your initial bet back. You now have $" + currentMoney + ".") % The user only gets their bet back
+    else
+        disp("Dealer wins. You have $" + currentMoney + " remaining."); % The user loses their bet
+    end
+end
